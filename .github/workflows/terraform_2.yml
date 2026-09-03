@@ -62,7 +62,11 @@ jobs:
 
         uses: hashicorp/setup-terraform@v3
 
-
+      - name: Check GitHub Context
+        run: |
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Ref: $GITHUB_REF"
+          echo "Branch: $GITHUB_REF_NAME"
       # ---------------------------
       # 3. Configure AWS OIDC
       # ---------------------------
