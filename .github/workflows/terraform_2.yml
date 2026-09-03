@@ -1,0 +1,119 @@
+
+name: Terraform Deployment
+
+on:
+
+  workflow_dispatch:
+
+    inputs:
+
+      environment:
+        description: "Select environment"
+        required: true
+        type: choice
+
+        options:
+          - dev
+          - test
+          - ppe
+          - prod
+
+      terraform_action:
+        description: "Select Terraform action"
+        required: true
+        type: choice
+
+        options:
+          - fmt
+          - plan
+          - apply
+
+
+permissions:
+  id-token: write
+  contents: read
+
+
+jobs:
+
+  terraform:
+
+    name: "${{ inputs.terraform_action }} - ${{ inputs.environment }}"
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+      # ---------------------------
+      # 1. Checkout
+      # ---------------------------
+
+      - name: Checkout Repository
+
+        uses: actions/checkout@v4
+
+
+      # ---------------------------
+      # 2. Install Terraform
+      # ---------------------------
+
+      - name: Setup Terraform
+
+        uses: hashicorp/setup-terraform@v3
+
+
+      # ---------------------------
+      # 3. Configure AWS OIDC
+      # ---------------------------
+
+      - name: Configure AWS Credentials
+
+        uses: aws-actions/configure-aws-credentials@v6
+
+        with:
+
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+
+          aws-region: ap-south-1
+
+
+      # ---------------------------
+      # 4. Terraform Init
+      # ---------------------------
+
+      - name: Terraform Init
+
+        run: terraform init
+
+
+      # ---------------------------
+      # 5. Terraform Command
+      # ---------------------------
+
+      - name: Terraform Action
+
+        run: |
+
+          if [ "${{ inputs.terraform_action }}" == "fmt" ]; then
+
+            terraform fmt -check
+
+          elif [ "${{ inputs.terraform_action }}" == "plan" ]; then
+
+            terraform plan \
+              -var-file="environments/${{ inputs.environment }}/${{ inputs.environment }}.tfvars"
+
+          elif [ "${{ inputs.terraform_action }}" == "apply" ]; then
+
+            terraform apply \
+              -var-file="environments/${{ inputs.environment }}/${{ inputs.environment }}.tfvars" \
+              -auto-approve
+
+          else
+
+            echo "Invalid Terraform action"
+
+            exit 1
+
+          fi
