@@ -73,7 +73,7 @@ jobs:
 
         with:
 
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: "arn:aws:iam::905846954332:role/GitHubActionsTerraformRole"
 
           aws-region: ap-south-1
 
