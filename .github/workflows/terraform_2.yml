@@ -67,6 +67,40 @@ jobs:
           echo "Repository: $GITHUB_REPOSITORY"
           echo "Ref: $GITHUB_REF"
           echo "Branch: $GITHUB_REF_NAME"
+          echo "Event      : $GITHUB_EVENT_NAME"
+          echo "Actor      : $GITHUB_ACTOR"
+      
+      # ---------------------------
+      # 4. Debug GitHub OIDC Token
+      # ---------------------------
+
+      - name: Debug GitHub OIDC Token
+        shell: bash
+        run: |
+          echo "Requesting GitHub OIDC token..."
+
+          TOKEN=$(curl -sSf \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" \
+            | jq -r '.value')
+
+          echo "OIDC token received successfully"
+          echo "Token length: ${#TOKEN}"
+
+          echo ""
+          echo "OIDC Token Claims:"
+          echo "$TOKEN" | cut -d '.' -f2 | base64 -d 2>/dev/null | jq '{
+            iss,
+            aud,
+            sub,
+            repository,
+            repository_owner,
+            ref,
+            event_name,
+            workflow,
+            actor
+          }'
+
       # ---------------------------
       # 3. Configure AWS OIDC
       # ---------------------------
