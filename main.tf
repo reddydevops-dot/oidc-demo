@@ -15,6 +15,6 @@ module "ec2" {
   subnet_id         = var.subnet_id
   security_group_id = module.security_group.security_group_id
 
-  name        = "${var.environment}-web-server"
+  name        = "${var.environment}-new-web-server"
   environment = var.environment
 }
