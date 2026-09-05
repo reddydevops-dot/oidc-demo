@@ -64,12 +64,13 @@ jobs:
 
       - name: Check GitHub Context
         run: |
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Ref: $GITHUB_REF"
-          echo "Branch: $GITHUB_REF_NAME"
-          echo "Event      : $GITHUB_EVENT_NAME"
-          echo "Actor      : $GITHUB_ACTOR"
-      
+          echo "Repository      : $GITHUB_REPOSITORY"
+          echo "Ref             : $GITHUB_REF"
+          echo "Branch          : $GITHUB_REF_NAME"
+          echo "Event           : $GITHUB_EVENT_NAME"
+          echo "Actor           : $GITHUB_ACTOR"
+          echo "Owner ID"       : ${{ github.repository_owner_id }}
+          echo "Repository ID"  : ${{ github.repository_id }}
       
       # ---------------------------
       # 3. Configure AWS OIDC
